@@ -1,0 +1,517 @@
+/* 4 Eyes – Gestaltung nach dem Startseiten-Entwurf v4
+   (helles Grau, Gelb, Weiss, Blau; eckig; IMG Basis; Handschrift-Elemente) */
+
+@font-face {
+  font-family: "IMG Basis";
+  src: url("../fonts/IMGBasis-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --grey: #d6d6d6;           /* Seitenhintergrund */
+  --yellow: #f3f69a;
+  --blue: #5474fb;
+  --blue-deep: #3d5cf0;
+  --white: #ffffff;
+  --ink: #181818;
+
+  --bg: var(--grey);
+  --surface: var(--white);
+  --canvas: #c9c9c9;         /* Hintergrund hinter den PDF-Seiten */
+  --hover: #efefef;          /* Weiss wird beim Überfahren hellgrau */
+  --yellow-hover: #e9ec88;   /* Gelb, eine Spur tiefer */
+  --line: rgba(24, 24, 24, 0.14);
+  --muted: rgba(24, 24, 24, 0.58);
+
+  /* Statusfarben aus der Palette */
+  --open: #fc3a3f;           /* Rot   – offen */
+  --open-soft: rgba(252, 58, 63, 0.16);
+  --open-ink: var(--white);  /* Schrift auf der vollen Farbe */
+  --check: #fd76c1;          /* Pink  – prüfen */
+  --check-soft: rgba(253, 118, 193, 0.24);
+  --check-ink: var(--ink);
+  --done: #adfd54;           /* Grün  – erledigt */
+  --done-soft: rgba(173, 253, 84, 0.45);
+  --done-ink: var(--ink);
+
+  --gutter: 24px;            /* Abstand zum Fensterrand */
+  --font: "IMG Basis", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ease: cubic-bezier(.44, 0, 0, 1);     /* Hauptkurve wie analogueagency.com: schnell los, lang auslaufend */
+  --ease-in: cubic-bezier(.56, 0, .9, .4);
+  --ease-io: cubic-bezier(.65, 0, .35, 1); /* weich rein und raus */
+  --dur: .5s;
+  --track: -0.01em;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font: 15px/1.45 var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+[hidden] { display: none !important; }
+svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+button { font: inherit; color: inherit; }
+u { text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* ---------- Logo (Originalpfade aus img/logo-4eyes.svg) ---------- */
+#logo path, .logo-live path { stroke: none; }
+#logo .logo-eye, .logo-live .logo-eye { fill: var(--white); }
+#logo .logo-pupil, .logo-live .logo-pupil { fill: var(--ink); }
+#logo .logo-type, .logo-live .logo-type { fill: var(--blue); }
+/* lebendiges Logo (js/logo.js) */
+.logo-live { overflow: visible; }
+.logo-live .eye-wrap, .logo-live .eye-ball, .logo-live .logo-type { transform-box: fill-box; transform-origin: center; }
+.logo-live .logo-pupil { transition: transform .3s var(--ease); }
+.logo-live .eye-lid { fill: none; stroke: var(--ink); stroke-width: 3.6; stroke-linecap: round; opacity: 0; }
+
+/* ---------- Handschrift ---------- */
+#hand-circle path, #hand-line-top path, #hand-line-bottom path {
+  stroke-width: 2; vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;   /* stroke-dashoffset kommt vom <use> (Animation) */
+}
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+/* ---------- Kopfzeile (nur Prüfansicht) ----------
+   Logo gleich gross und am gleichen Ort wie auf der Startseite;
+   der Inhalt darunter beginnt auf derselben Höhe wie die Upload-Felder. */
+.topbar {
+  flex: none;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: start;
+  padding: 22px var(--gutter) 0;
+  margin-bottom: 44px;
+}
+body[data-view="upload"] .topbar { display: none; }
+.brand { grid-column: 2; display: block; line-height: 0; }
+.brand svg { width: 184px; height: 157px; }
+.actions { grid-column: 3; justify-self: end; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 42px; padding: 0 18px;
+  border: 0; border-radius: 999px;   /* klickbar = rund; Tags bleiben eckig */
+  background: var(--white); color: var(--ink);
+  font: 17px/1 var(--font); letter-spacing: var(--track);
+  cursor: pointer; white-space: nowrap;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), opacity var(--dur) var(--ease), transform .6s var(--ease);
+}
+.btn:not(:disabled):not(.btn-lg):hover { transform: translateY(-2px) scale(1.03); }
+.btn:not(:disabled):not(.btn-lg):active { transform: scale(.96); transition-duration: .15s; }
+.btn svg { width: 18px; height: 18px; stroke-width: 2; }
+.btn:hover { background: var(--hover); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn-primary { background: var(--blue); color: var(--white); }
+.btn-primary:hover { background: var(--blue-deep); }
+.btn-ghost { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn-ghost:hover { background: rgba(24, 24, 24, .06); }
+.btn-link {
+  border: 0; background: none; cursor: pointer; padding: 6px;
+  font: 15px var(--font); text-decoration: underline; text-underline-offset: 3px;
+}
+.icon-btn {
+  width: 30px; height: 30px; display: inline-grid; place-items: center;
+  border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer;
+  transition: background var(--dur) var(--ease), transform .6s var(--ease);
+}
+.icon-btn:hover:not(:disabled) { transform: scale(1.12); }
+.icon-btn svg { width: 18px; height: 18px; stroke-width: 2.2; }
+.icon-btn:hover:not(:disabled) { background: rgba(24, 24, 24, .08); }
+.icon-btn:disabled { opacity: .3; cursor: default; }
+
+/* Grosser Button «Korrekturen Prüfen»
+   - ohne PDFs: schwarz und eckig
+   - bereit: blau und eckig
+   - Hover: die Ecken runden sich weich ab */
+.btn-lg {
+  --h: 72px;
+  flex: none; width: 100%; height: var(--h); padding: 0 24px 3px;
+  border-radius: 0;
+  font-size: 40px; letter-spacing: var(--track);
+  transition:
+    border-radius .7s var(--ease-io),
+    background-color .7s var(--ease-io),
+    color var(--dur) var(--ease);
+}
+.btn-lg, .btn-lg:hover { background: var(--blue); color: var(--white); }
+.btn-lg:disabled, .btn-lg:disabled:hover { background: var(--ink); color: var(--white); opacity: 1; }
+.btn-lg:not(:disabled):hover,
+.btn-lg:not(:disabled):focus-visible { border-radius: calc(var(--h) / 2); }
+.btn-lg:focus-visible { outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  .btn-lg { transition: none; }
+}
+
+/* ---------- Startseite: füllt das Fenster bis zum Rand ---------- */
+.upload { flex: 1; min-height: 0; overflow: auto; display: flex; padding: 22px var(--gutter) var(--gutter); }
+.upload-inner { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.hero-logo { flex: none; line-height: 0; margin-bottom: 44px; }
+.hero-logo svg { width: 184px; height: 157px; }
+
+.drops {
+  flex: 1; min-height: 300px; width: 100%;
+  display: grid; grid-template-columns: minmax(0, 1fr) 98px minmax(0, 1fr); align-items: stretch;
+}
+.drops-plus {
+  position: relative; z-index: 1;
+  align-self: start;
+  width: 98px; height: 98px; border-radius: 50%;
+  background: var(--white); color: var(--ink);
+  display: grid; place-items: center;
+}
+.drops-plus svg { width: 54px; height: 54px; stroke-width: 2.6; stroke-linecap: butt; }
+
+.drop { display: flex; flex-direction: column; cursor: pointer; min-width: 0; min-height: 0; }
+.drop-head {
+  flex: none; display: flex; align-items: center;
+  height: 72px; padding: 0 16px 2px;
+  background: var(--yellow);
+  font-size: 40px; line-height: 1.2; letter-spacing: var(--track);
+  white-space: nowrap; overflow: hidden;
+  transition: background var(--dur) var(--ease);
+}
+.drop-title { overflow: hidden; text-overflow: ellipsis; transition: transform .7s var(--ease); }
+.drop:hover .drop-title { transform: translateX(10px); }
+
+/* Unterstrich: läuft beim Hover nach rechts weg und von links wieder ein */
+.drop-cta u {
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) right bottom / 100% 1px no-repeat;
+  padding-bottom: 1px;
+}
+.drop:hover .drop-cta u { animation: underline .9s var(--ease) both; }
+@keyframes underline {
+  0% { background-size: 100% 1px; background-position: right bottom; }
+  45% { background-size: 0 1px; background-position: right bottom; }
+  46% { background-size: 0 1px; background-position: left bottom; }
+  100% { background-size: 100% 1px; background-position: left bottom; }
+}
+
+.drop-body {
+  position: relative; overflow: hidden;
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: 20px; text-align: center;
+  background: var(--white);
+  font-size: 15px; line-height: 1.55;
+  transition: background var(--dur) var(--ease);
+}
+.drop:hover .drop-head, .drop.over .drop-head { background: var(--yellow-hover); }
+.drop:hover .drop-body, .drop.over .drop-body { background: var(--hover); }
+.drop.over .drop-body { box-shadow: inset 0 0 0 2px var(--blue); }
+
+/* leeres Feld: Handschrift um den Text
+   links: Kritzel-Linie oben und unten, Text dazwischen
+   rechts: Kreis rund um den Text */
+.drop-text { position: relative; display: flex; flex-direction: column; align-items: center; }
+.drop-line { display: block; width: min(72%, 320px); color: var(--ink); }
+.drop-line.top { aspect-ratio: 354 / 34; margin-bottom: 26px; }
+.drop-line.bottom { aspect-ratio: 354 / 38; margin-top: 22px; }
+.drop-text.circled { padding: 46px 62px; }
+.drop-text.circled .drop-circle { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; color: var(--ink); }
+.drop-deco use { animation: draw 1.4s var(--ease-io) .2s both; }
+.drop-line.bottom use { animation-delay: .75s; }
+.drop:hover .drop-deco use { animation: draw 1.2s var(--ease-io) both; }
+.drop:hover .drop-line.bottom use { animation-delay: .45s; }
+.drop.filled .drop-deco, .drop.filled .drop-hint { display: none; }
+.drop.filled .drop-text.circled { padding: 0; }
+
+/* Hochladen: das Feld füllt sich blau von unten, dann zieht die Fläche nach oben ab */
+.drop-fill {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: flex-end;
+  padding: 20px;
+  background: var(--blue); color: var(--white);
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path .6s var(--ease);
+  pointer-events: none;
+}
+.drop-fill-label { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+.drop-fill-label span { font-size: 15px; }
+.drop-fill-label b { font-weight: 400; font-size: clamp(44px, 6vw, 88px); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+
+/* gefülltes Feld: Dateiname von Hand eingekreist */
+.drop-file { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; max-width: 100%; }
+.drop-name { position: relative; display: block; max-width: 100%; padding: 30px 46px; margin-bottom: 8px; }
+.drop-name b {
+  position: relative; display: block;
+  font-weight: 400; font-size: clamp(18px, 2vw, 26px); line-height: 1.2;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.drop-circle {
+  position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+  color: var(--blue);
+}
+.drop-circle use { animation: draw 1.3s var(--ease-io) .35s both; }
+.drop-file small { font-size: 14px; color: var(--muted); }
+.drop-file small.warn { color: var(--open); }
+.drop.filled .drop-cta { font-size: 14px; margin-top: 6px; }
+
+.upload-foot { flex: none; width: 100%; margin-top: var(--gutter); }
+
+@media (prefers-reduced-motion: reduce) {
+  .drop-deco use, .drop-circle use { animation: none; }
+}
+
+/* ---------- Prüfansicht ---------- */
+.review {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: 400px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 0 var(--gutter) var(--gutter);
+}
+.review-foot { grid-column: 1 / -1; margin-top: calc(var(--gutter) - 8px); }
+.sidebar { min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+
+.summary { background: var(--white); }
+.summary-top {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding: 16px 16px 14px; background: var(--yellow);
+}
+.summary-title { font-size: 34px; line-height: 1; letter-spacing: var(--track); }
+.summary-count { font-size: 14px; }
+.bar { display: flex; height: 10px; overflow: hidden; background: rgba(24,24,24,.08); margin: 16px 16px 12px; gap: 3px; }
+.bar span { transition: flex-grow .5s var(--ease); }
+.bar .done { background: var(--done); }
+.bar .check { background: var(--check); }
+.bar .open { background: var(--open); }
+.legend { display: flex; gap: 18px; padding: 0 16px 14px; font-size: 13px; }
+.legend b { font-weight: 400; font-size: 16px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+.dot.open { background: var(--open); }
+.dot.check { background: var(--check); }
+.dot.done { background: var(--done); }
+.dot.none { background: transparent; }
+.allgood {
+  display: flex; gap: 10px; align-items: center;
+  margin: 0 16px 16px; padding: 10px 14px;
+  background: var(--done); color: var(--done-ink); font-size: 16px; line-height: 1.2;
+}
+.allgood svg { width: 18px; height: 18px; stroke-width: 2.4; flex: none; }
+
+.filters { display: flex; gap: 6px; }
+.filters button {
+  flex: 1; height: 38px; border: 0; border-radius: 999px; background: var(--white);
+  font-size: 16px; line-height: 1; letter-spacing: var(--track); cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.filters button { transition: background var(--dur) var(--ease), color var(--dur) var(--ease), transform .6s var(--ease); }
+.filters button:hover { background: var(--hover); transform: translateY(-2px); }
+.filters button.on { background: var(--ink); color: var(--white); }
+.filters .n { font-size: 13px; margin-left: 5px; opacity: .6; }
+
+/* Kommentare: Kartenstapel (js/motion.js → cardStack) und Chat-Blasen */
+.items { list-style: none; margin: 0; padding: 0 0 2px; overflow: auto; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+.empty { background: var(--white); text-align: center; padding: 40px 20px; border-radius: 22px 22px 22px 6px; }
+.item {
+  position: sticky; flex: none;
+  border-radius: 22px 22px 22px 6px;   /* Chat-Blase: unten links die «Sprechecke» */
+  overflow: hidden;
+  transform-origin: 50% 0;
+  box-shadow: 0 -10px 28px -16px rgba(24, 24, 24, .35);
+  padding: 12px 16px 13px 18px;
+  background: var(--white); cursor: pointer;
+  /* Unschärfe: nicht gewählte Karten leicht, Karten tief im Stapel stärker (--blur aus cardStack) */
+  --blur: var(--stack-blur, 0px);
+  filter: blur(var(--blur));
+  transition: background var(--dur) var(--ease), filter .6s var(--ease), opacity .9s var(--ease), transform 1s var(--ease);
+}
+.item:not(.in) { opacity: 0; transform: perspective(1200px) translateY(40px) rotateX(-10deg); }
+.item:hover { background: var(--hover); }
+.item.sel, .item:hover { --blur: 0px; }
+.item.open { --st: var(--open); --st-soft: var(--open-soft); --st-ink: var(--open-ink); }
+.item.check { --st: var(--check); --st-soft: var(--check-soft); --st-ink: var(--check-ink); }
+.item.done { --st: var(--done); --st-soft: var(--done-soft); --st-ink: var(--done-ink); }
+.item-head { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.num { font-size: 20px; line-height: 1; }
+.kind { font-size: 17px; line-height: 1; letter-spacing: var(--track); }
+.badge { margin-left: auto; padding: 3px 10px 2px; background: var(--st); color: var(--st-ink, var(--white)); font-size: 14px; line-height: 1.2; }
+.tag { padding: 1px 8px; font-size: 12px; background: var(--yellow); }
+.tag.new { background: var(--done); color: var(--done-ink); }
+.change { margin-top: 8px; font-size: 18px; line-height: 1.35; letter-spacing: var(--track); word-break: break-word; }
+.change del { color: var(--open); text-decoration-thickness: 2px; background: var(--open-soft); padding: 0 3px; }
+.change ins { color: var(--ink); text-decoration: none; background: var(--done-soft); padding: 0 3px; }
+.change .arrow { margin: 0 6px; }
+.change .ctx { color: var(--muted); }
+.change.quote { font-size: 17px; }
+.comment { margin: 8px 0 0; font-size: 14px; }
+.comment .who { color: var(--muted); }
+.reason { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+.item-actions { display: flex; gap: 6px; margin-top: 12px; }
+.item-actions .btn { height: 34px; padding: 0 14px; font-size: 16px; background: var(--yellow); }
+.item-actions .btn:hover { background: var(--yellow-hover); }
+.item-actions .btn svg { width: 15px; height: 15px; }
+.kbd { font-size: 12px; border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; margin-left: 2px; opacity: .6; }
+
+.rounds { background: var(--white); padding: 10px 16px; font-size: 13px; }
+.rounds summary { cursor: pointer; font-size: 17px; letter-spacing: var(--track); }
+.rounds ol { list-style: none; margin: 8px 0 2px; padding: 0; display: grid; gap: 6px; max-height: 160px; overflow: auto; }
+.rounds li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: baseline; }
+.rounds li b { font-weight: 400; font-size: 15px; }
+.rounds .rfile { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+
+/* ---------- Seitenvergleich ---------- */
+.compare { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.pane { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--white); }
+.pane-head {
+  flex: none; height: 56px; display: flex; align-items: center; gap: 8px; padding: 0 10px 0 16px;
+  background: var(--yellow);
+}
+.pane-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 26px; line-height: 1; letter-spacing: var(--track); white-space: nowrap; padding-bottom: 2px; }
+.pager { display: inline-flex; align-items: center; gap: 2px; font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pager-label { min-width: 74px; text-align: center; }
+.pane-body { flex: 1; min-height: 0; overflow: auto; padding: 24px; }
+.sheet { position: relative; margin: 0 auto; background: #fff; box-shadow: 0 0 0 1px rgba(24, 24, 24, .12); transform-origin: center top; }
+.sheet canvas { display: block; }
+.overlay { position: absolute; inset: 0; pointer-events: none; }
+.mark {
+  position: absolute; pointer-events: auto; cursor: pointer;
+  border: 2px solid var(--st); border-radius: 2px;
+  background: color-mix(in srgb, var(--st) 12%, transparent);
+  transition: box-shadow var(--dur) var(--ease), transform .5s var(--ease);
+}
+.mark:hover { transform: scale(1.06); }
+.mark.open { --st: var(--open); --st-ink: var(--open-ink); }
+.mark.check { --st: var(--check); --st-ink: var(--check-ink); }
+.mark.done { --st: var(--done); --st-ink: var(--done-ink); }
+.mark.cust { --st: #5474fb; background: transparent; border-width: 1.5px; opacity: .65; }
+.mark.approx { border-style: dashed; }
+.mark.sel { box-shadow: 0 0 0 4px color-mix(in srgb, var(--st) 30%, transparent); opacity: 1; border-width: 2.5px; }
+.mark-num {
+  position: absolute; left: -2px; top: -21px; pointer-events: auto; cursor: pointer;
+  min-width: 20px; height: 19px; padding: 0 6px; border-radius: 99px;
+  background: var(--st); color: var(--st-ink, #fff); font-size: 13px; line-height: 19px; text-align: center;
+}
+.pane-empty { text-align: center; padding: 60px 0; }
+
+/* ---------- Dialog, Overlays ---------- */
+.dialog {
+  border: 0; border-radius: 22px; padding: 0; width: 480px; max-width: calc(100vw - 32px);
+  overflow: hidden; transform-origin: 50% 100%;
+  background: var(--white); color: var(--ink);
+}
+.dialog::backdrop {
+  background: rgba(24, 24, 24, .25);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+}
+.dialog h2 {
+  margin: 0; padding: 18px 24px 18px;
+  background: var(--yellow);
+  font-size: 40px; font-weight: 400; line-height: 1.1; letter-spacing: var(--track);
+}
+.muted { margin: 0; padding: 18px 24px 10px; font-size: 15px; }
+.opt { display: flex; align-items: center; gap: 10px; padding: 7px 24px; font-size: 16px; cursor: pointer; }
+.opt { gap: 12px; }
+/* Schalter (Switch): Knopf gleitet nach rechts, Spur wird blau */
+.opt input {
+  appearance: none; -webkit-appearance: none; flex: none; position: relative;
+  width: 42px; height: 24px; margin: 0; border-radius: 999px;
+  background: var(--grey); cursor: pointer;
+  transition: background .5s var(--ease);
+}
+.opt input::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%; background: var(--white);
+  box-shadow: 0 1px 3px rgba(24, 24, 24, .25);
+  transition: transform .6s var(--ease);
+}
+.opt input:checked { background: var(--blue); }
+.opt input:checked::after { transform: translateX(18px); }
+.opt:hover input:not(:checked) { background: #c8c8c8; }
+.opt:active input::after { scale: 1.12 .9; }
+.opt input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.opt .dot { margin: 0 0 0 -4px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 18px 24px 24px; }
+
+.dropveil {
+  position: fixed; inset: 0; z-index: 40; display: grid; place-items: center;
+  background: rgba(214, 214, 214, .92);
+  pointer-events: none;
+}
+.dropveil div {
+  padding: 30px 48px 34px; background: var(--white);
+  box-shadow: inset 0 0 0 2px var(--blue);
+  font-size: 56px; line-height: 1; letter-spacing: var(--track);
+}
+.busy {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; justify-items: center; gap: 16px;
+  background: rgba(214, 214, 214, .88);
+}
+.busy p { margin: 0; font-size: 16px; }
+.spinner {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 4px solid var(--white); border-top-color: var(--blue);
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.toast {
+  position: fixed; left: 50%; bottom: var(--gutter); transform: translateX(-50%); z-index: 60;
+  padding: 12px 20px; background: var(--ink); color: var(--white);
+  font-size: 15px; max-width: min(620px, calc(100vw - 32px));
+}
+.toast.error { background: var(--open); }
+
+/* Vorhang für Seitenwechsel: fährt von unten hoch, zieht nach oben ab */
+.curtain {
+  position: fixed; inset: 0; z-index: 80;
+  display: flex; align-items: flex-end;
+  padding: var(--gutter);
+  background: var(--blue); color: var(--white);
+}
+.curtain-mask { overflow: hidden; padding-bottom: .08em; }
+.curtain-label { display: block; font-size: clamp(40px, 7vw, 110px); line-height: 1.05; letter-spacing: -0.02em; }
+.curtain-pct { font-variant-numeric: tabular-nums; opacity: .7; white-space: nowrap; }
+
+/* ---------- Responsiv ---------- */
+@media (max-width: 1240px) {
+  .drop-head { font-size: 30px; height: 60px; }
+  .drops { grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); }
+  .drops-plus { width: 72px; height: 72px; margin-top: -6px; }
+  .drops-plus svg { width: 40px; height: 40px; }
+  .btn-lg { --h: 64px; font-size: 32px; }
+  .review { grid-template-columns: 340px minmax(0, 1fr); }
+  .pane-title { font-size: 20px; }
+}
+@media (max-height: 760px) {
+  .hero-logo, .topbar { margin-bottom: 24px; }
+  .hero-logo svg, .brand svg { width: 140px; height: 120px; }
+}
+@media (max-width: 760px) {
+  :root { --gutter: 16px; }
+  .upload { padding-top: 16px; }
+  .hero-logo { margin-bottom: 24px; }
+  .hero-logo svg { width: 130px; height: 111px; }
+  .drops { grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr auto 1fr; justify-items: stretch; min-height: 520px; }
+  .drops-plus { justify-self: center; width: 56px; height: 56px; margin: -14px 0; }
+  .drops-plus svg { width: 30px; height: 30px; }
+  .drop-head { font-size: 26px; height: 52px; }
+  .drop-line { width: min(64%, 240px); }
+  .drop-line.top { margin-bottom: 14px; }
+  .drop-line.bottom { margin-top: 12px; }
+  .drop-text.circled { padding: 30px 40px; }
+  .drop-name { padding: 22px 30px; }
+  .btn-lg { --h: 58px; font-size: 26px; }
+  .topbar { padding-top: 16px; margin-bottom: 24px; grid-template-columns: auto 1fr; gap: 12px; }
+  .brand { grid-column: 1; }
+  .brand svg { width: 130px; height: 111px; }
+  .actions { grid-column: 2; }
+  .actions .btn svg { display: none; }
+  .review { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 45%) minmax(0, 1fr) auto; }
+  .compare { grid-template-columns: minmax(0, 1fr); }
+  #paneOrig { display: none; }
+}
+
+/* Download-Fenster: blaue Füllung beim Erstellen (js/motion.js → dialogLoader) */
+.dialog .drop-fill { padding: 24px; }
+.dialog .drop-fill-label b { font-size: 56px; }

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>4 Eyes – Korrekturen prüfen</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23181818'/%3E%3Ccircle cx='11' cy='16' r='7.5' fill='%23fff'/%3E%3Ccircle cx='21' cy='16' r='7.5' fill='%23fff'/%3E%3Ccircle cx='12.5' cy='17.5' r='3' fill='%23000'/%3E%3Ccircle cx='19.5' cy='17.5' r='3' fill='%23000'/%3E%3C/svg%3E" />
+  <link rel="preload" href="fonts/IMGBasis-Regular.otf" as="font" type="font/otf" crossorigin />
+  <link rel="stylesheet" href="css/app.css" />
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body data-view="upload">
+  <!-- Logo: wird oben links (klein) und auf der Startseite (gross) verwendet -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="logo" viewBox="0 0 184 157">
+      <path class="logo-eye" d="M25.2359 97.7425C39.1733 97.7425 50.4719 86.444 50.4719 72.5066C50.4719 58.5692 39.1733 47.2707 25.2359 47.2707C11.2985 47.2707 0 58.5692 0 72.5066C0 86.444 11.2985 97.7425 25.2359 97.7425Z" />
+      <path class="logo-pupil" d="M30.79 86.7353C36.3616 86.7353 40.8783 82.2186 40.8783 76.6469C40.8783 71.0753 36.3616 66.5586 30.79 66.5586C25.2184 66.5586 20.7017 71.0753 20.7017 76.6469C20.7017 82.2186 25.2184 86.7353 30.79 86.7353Z" />
+      <path class="logo-eye" d="M65.0137 84.3419C78.9511 84.3419 90.2496 73.0434 90.2496 59.106C90.2496 45.1686 78.9511 33.8701 65.0137 33.8701C51.0763 33.8701 39.7778 45.1686 39.7778 59.106C39.7778 73.0434 51.0763 84.3419 65.0137 84.3419Z" />
+      <path class="logo-pupil" d="M71.7187 70.911C77.2903 70.911 81.807 66.3943 81.807 60.8227C81.807 55.2511 77.2903 50.7344 71.7187 50.7344C66.1471 50.7344 61.6304 55.2511 61.6304 60.8227C61.6304 66.3943 66.1471 70.911 71.7187 70.911Z" />
+      <path class="logo-eye" d="M101.792 109.588C115.73 109.588 127.028 98.2894 127.028 84.352C127.028 70.4146 115.73 59.1161 101.792 59.1161C87.8547 59.1161 76.5562 70.4146 76.5562 84.352C76.5562 98.2894 87.8547 109.588 101.792 109.588Z" />
+      <path class="logo-pupil" d="M95.2582 92.1177C100.83 92.1177 105.347 87.601 105.347 82.0294C105.347 76.4578 100.83 71.9411 95.2582 71.9411C89.6866 71.9411 85.1699 76.4578 85.1699 82.0294C85.1699 87.601 89.6866 92.1177 95.2582 92.1177Z" />
+      <path class="logo-eye" d="M129.553 82.3626C143.49 82.3626 154.789 71.0641 154.789 57.1267C154.789 43.1893 143.49 31.8908 129.553 31.8908C115.615 31.8908 104.317 43.1893 104.317 57.1267C104.317 71.0641 115.615 82.3626 129.553 82.3626Z" />
+      <path class="logo-pupil" d="M123.847 71.1433C129.418 71.1433 133.935 66.6266 133.935 61.055C133.935 55.4834 129.418 50.9667 123.847 50.9667C118.275 50.9667 113.759 55.4834 113.759 61.055C113.759 66.6266 118.275 71.1433 123.847 71.1433Z" />
+      <path class="logo-type" d="M45.6246 34.5366L38.2932 32.4159L35.3343 42.6658L30.0933 41.151L33.0521 30.9011L14.4912 25.5389L15.8646 20.7724L40.4643 0L47.099 1.9187L39.6363 27.7605L46.9778 29.8812L45.6246 34.5366ZM34.4053 26.2458L40.333 5.7056L20.833 22.3276L34.4053 26.2458Z" />
+      <path class="logo-type" d="M51.2088 101.247L55.854 112.9L74.1423 105.589L75.9398 110.093L57.6515 117.394L63.337 131.633L83.8771 123.433L85.6746 127.937L60.0752 138.156L44.3418 98.7725L69.9413 88.5428L71.7388 93.0467L51.2088 101.247Z" />
+      <path class="logo-type" d="M115.667 115.193L99.9135 157H94.2785L99.6711 143.367L87.9165 115.193H93.7938L102.398 137.308L109.85 115.193H115.667Z" />
+      <path class="logo-type" d="M147.285 115.364L152.193 116.919C149.901 122.16 144.306 124.776 137.025 122.474C128.3 119.707 125.271 111.82 127.997 103.216C130.694 94.7231 138.368 90.3505 146.053 92.7943C155.354 95.7329 156.475 104.418 154.223 111.527L153.89 112.567L132.754 105.862C131.269 111.749 132.935 116.919 138.257 118.606C142.175 119.848 145.447 118.969 147.285 115.364ZM145.054 96.7327C140.206 95.1977 136.217 97.5506 134.046 102.398L149.699 107.356C151.173 102.297 149.618 98.1767 145.054 96.7327Z" />
+      <path class="logo-type" d="M167.007 68.6692C166.26 70.5879 166.836 71.9815 169.209 73.7386L175.955 78.808C179.418 81.4437 180.499 84.2005 179.035 87.9874C176.641 94.198 169.825 94.3696 164.735 92.4005C158.232 89.896 153.92 84.0794 156.152 77.6063L160.847 79.4139C160.04 83.1907 162.009 86.6747 166.189 88.2904C169.976 89.7547 172.865 89.1791 173.996 86.2303C174.783 84.2005 174.016 82.9988 171.521 81.1912L165.957 77.1014C161.514 73.8194 160.605 70.6182 162.019 66.9424C164.109 61.5094 170.128 61.2368 175.217 63.1958C180.984 65.4276 184.326 70.7394 182.529 75.8896L177.611 73.991C178.358 70.7091 176.783 68.4167 173.561 67.1645C170.34 65.9123 167.856 66.4677 167.007 68.6692Z" />
+    </symbol>
+  </svg>
+
+  <header class="topbar">
+    <a class="brand" href="#" id="brandLink" aria-label="4 Eyes – zur Startseite">
+      <svg aria-hidden="true"><use href="#logo" /></svg>
+    </a>
+    <div class="crumbs" id="crumbs" hidden></div>
+    <div class="actions" id="reviewActions" hidden>
+      <button class="btn" id="btnNewVersion" title="Neue überarbeitete Version hochladen und erneut prüfen">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10a6 6 0 0 1 10.4-4.1M16 10a6 6 0 0 1-10.4 4.1M14.5 2.5v3.6h-3.6M5.5 17.5v-3.6h3.6" /></svg>
+        Neue Version prüfen
+      </button>
+      <button class="btn btn-primary" id="btnExport">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9.5M6 9l4 4 4-4M4 16.5h12" /></svg>
+        Kommentiertes PDF
+      </button>
+      <button class="btn btn-ghost" id="btnRestart" title="Neue Prüfung mit anderen Dateien beginnen">Neu beginnen</button>
+    </div>
+  </header>
+
+  <!-- Schritt 1 + 2: Dateien wählen -->
+  <main class="upload" id="viewUpload">
+    <div class="upload-inner">
+      <div class="hero-logo"><svg role="img" aria-label="4 Eyes"><use href="#logo" /></svg></div>
+      <h1 class="sr-only">4 Eyes – sind alle Korrekturen drin?</h1>
+      <p class="sr-only">Lade das PDF mit den Kundenkommentaren und deine überarbeitete Version. 4 Eyes vergleicht beide und markiert, was noch fehlt.</p>
+
+      <div class="drops">
+        <label class="drop" id="dropOrig" data-role="orig">
+          <input type="file" accept="application/pdf,.pdf" hidden />
+          <span class="drop-head"><span class="drop-step">1.</span> <span class="drop-title">Korrektur-PDF</span></span>
+          <span class="drop-body">
+            <span class="drop-hint">mit Kommentaren, Streichungen …</span>
+            <span class="drop-file" hidden></span>
+            <span class="drop-cta">PDF hierher ziehen oder <u>auswählen</u></span>
+          </span>
+        </label>
+        <div class="drops-plus" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+        </div>
+        <label class="drop" id="dropRev" data-role="rev">
+          <input type="file" accept="application/pdf,.pdf" hidden />
+          <span class="drop-head"><span class="drop-step">2.</span> <span class="drop-title">Überarbeitetes PDF</span></span>
+          <span class="drop-body">
+            <span class="drop-hint">dein korrigierter Export</span>
+            <span class="drop-file" hidden></span>
+            <span class="drop-cta">PDF hierher ziehen oder <u>auswählen</u></span>
+          </span>
+        </label>
+      </div>
+
+      <div class="upload-foot">
+        <button class="btn btn-primary btn-lg" id="btnCompare" disabled>Korrekturen prüfen</button>
+        <button class="btn btn-link" id="btnDemo">oder mit Beispiel-PDFs ausprobieren</button>
+      </div>
+      <p class="privacy">Alles läuft lokal in deinem Browser.<br />Die PDFs werden nirgends hochgeladen.</p>
+    </div>
+  </main>
+
+  <!-- Schritt 3: Prüfen -->
+  <main class="review" id="viewReview" hidden>
+    <aside class="sidebar">
+      <section class="summary" id="summary"></section>
+      <nav class="filters" id="filters" aria-label="Filter"></nav>
+      <ol class="items" id="items"></ol>
+      <details class="rounds" id="rounds">
+        <summary>Verlauf</summary>
+        <ol id="roundList"></ol>
+      </details>
+    </aside>
+
+    <section class="compare">
+      <div class="pane" id="paneOrig">
+        <div class="pane-head">
+          <span class="pane-title">Korrektur vom Kunden</span>
+          <span class="pager">
+            <button class="icon-btn" data-step="-1" aria-label="Vorherige Seite"><svg viewBox="0 0 20 20"><path d="M12 5l-5 5 5 5" /></svg></button>
+            <span class="pager-label"></span>
+            <button class="icon-btn" data-step="1" aria-label="Nächste Seite"><svg viewBox="0 0 20 20"><path d="M8 5l5 5-5 5" /></svg></button>
+          </span>
+        </div>
+        <div class="pane-body"><div class="sheet"></div></div>
+      </div>
+      <div class="pane" id="paneRev">
+        <div class="pane-head">
+          <span class="pane-title">Neue Version</span>
+          <span class="pager">
+            <button class="icon-btn" data-step="-1" aria-label="Vorherige Seite"><svg viewBox="0 0 20 20"><path d="M12 5l-5 5 5 5" /></svg></button>
+            <span class="pager-label"></span>
+            <button class="icon-btn" data-step="1" aria-label="Nächste Seite"><svg viewBox="0 0 20 20"><path d="M8 5l5 5-5 5" /></svg></button>
+          </span>
+          <span class="seg" id="fitToggle" role="group" aria-label="Seitengrösse">
+            <button data-fit="width" class="on">Breite</button><button data-fit="page">Seite</button>
+          </span>
+        </div>
+        <div class="pane-body"><div class="sheet"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="dialog" id="exportDialog">
+    <form method="dialog">
+      <h2>Kommentiertes PDF</h2>
+      <p class="muted">Die neue Version mit allen Punkten als PDF-Kommentare, lesbar in Acrobat, Vorschau &amp; Co.</p>
+      <label class="opt"><input type="checkbox" name="open" checked /> <span class="dot open"></span> Offene Punkte markieren</label>
+      <label class="opt"><input type="checkbox" name="check" checked /> <span class="dot check"></span> Zu prüfende Punkte markieren</label>
+      <label class="opt"><input type="checkbox" name="done" /> <span class="dot done"></span> Erledigte Punkte markieren</label>
+      <label class="opt"><input type="checkbox" name="report" checked /> <span class="dot none"></span> Prüfbericht als letzte Seite anhängen</label>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" value="cancel">Abbrechen</button>
+        <button class="btn btn-primary" value="ok" id="btnDoExport">Herunterladen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <input type="file" id="newVersionInput" accept="application/pdf,.pdf" hidden />
+  <div class="dropveil" id="dropveil" hidden><div>Neue Version hier ablegen</div></div>
+  <div class="busy" id="busy" hidden><div class="spinner"></div><p id="busyText">PDF wird gelesen …</p></div>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>
